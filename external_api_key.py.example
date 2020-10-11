@@ -1,0 +1,8 @@
+EXTERNAL_API_KEY = "Your X-RapidAPI-Key"
+
+'''
+To get your EXTERNAL_API_KEY you should go to https://rapidapi.com/brianiswu/api/recipe-puppy/endpoints, log in,
+and copy a string from "X-RapidAPI-Key" textbox here as EXTERNAL_API_KEY. 
+The file with your external api key should be called external_api_key.py. 
+This way it will be automatically used in the external_api.py file to connect to the external api.
+'''
