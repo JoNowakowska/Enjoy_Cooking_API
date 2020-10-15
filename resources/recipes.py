@@ -2,6 +2,7 @@ from flask_restful import Resource, reqparse
 import requests
 from external_api_key import EXTERNAL_API_KEY
 
+
 request_parser = reqparse.RequestParser()
 request_parser.add_argument('ingredients',
                             required=True,
@@ -26,8 +27,6 @@ class Recipes(Resource):
 
         page_no = '?p=1'
 
-        print(ingredients)
-
         url = "https://recipe-puppy.p.rapidapi.com/"
 
         final_endpoint = url + page_no + ingredients + dish
@@ -42,10 +41,6 @@ class Recipes(Resource):
         res = response.json()
 
         list_of_results = res['results']
-        n = 1
-        for result in list_of_results:
-            print(f'''{n} - {result['title']}
-            Ingredients: {result['ingredients']},
-            Link to the recipe: {result['href']}
-            ''')
-            n += 1
+
+        return {f'''Recipes with the ingredients of your choice ({users_data['ingredients']})''': list_of_results}
+
