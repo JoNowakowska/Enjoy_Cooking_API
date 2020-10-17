@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 import requests
 from external_api_key import EXTERNAL_API_KEY
+from flask_jwt_extended import jwt_required
 
 
 request_parser = reqparse.RequestParser()
@@ -17,6 +18,7 @@ request_parser.add_argument('dish',
 
 
 class Recipes(Resource):
+    @jwt_required
     def post(self):
         users_data = request_parser.parse_args()
 
