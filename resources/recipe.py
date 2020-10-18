@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, fresh_jwt_required
 from models.recipe import RecipeModel
 
 
@@ -44,6 +44,14 @@ class FavouriteRecipe(Resource):
             return {"message": "Sorry, I couldn't find this recipe."}, 400
 
         return f_recipe.json()
+
+    @fresh_jwt_required
+    def delete(self, recipe_id):
+        recipe = RecipeModel.find_by_recipe_id(recipe_id)
+        if not recipe:
+            return {"message": "I couldn't find this recipe in my database"}, 400
+        recipe.delete_from_db()
+        return {"message": f"Recipe with the id {recipe_id} removed successfully!"}, 200
 
 
 

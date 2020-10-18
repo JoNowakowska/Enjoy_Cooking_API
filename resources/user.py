@@ -2,22 +2,28 @@ from models.user import UserModel
 from flask_restful import Resource, reqparse
 import re
 from werkzeug.security import safe_str_cmp
-from flask_jwt_extended import create_access_token, create_refresh_token
-
+from flask_jwt_extended import (create_access_token,
+                                create_refresh_token,
+                                jwt_refresh_token_required,
+                                get_jwt_identity,
+                                fresh_jwt_required,
+                                jwt_required,
+                                get_raw_jwt
+                                )
+from blacklist import BLACKLIST_LOGOUT
 
 _data_parser = reqparse.RequestParser()
 _data_parser.add_argument("username",
-                             required=True,
-                             type=str,
-                             help="Please provide a username.")
+                          required=True,
+                          type=str,
+                          help="Please provide a username.")
 _data_parser.add_argument("password",
-                             required=True,
-                             type=str,
-                             help="Please provide a password.")
+                          required=True,
+                          type=str,
+                          help="Please provide a password.")
+
 
 class UserRegister(Resource):
-
-
     def post(self):
         users_data = _data_parser.parse_args()
 
@@ -26,12 +32,14 @@ class UserRegister(Resource):
 
         pssw = users_data["password"]
 
-        if not (re.search("[^A-Za-z0-9]", pssw) and re.search("[A-Z]", pssw) and re.search("[a-z]", pssw) and re.search("[0-9]", pssw)):
+        if not (re.search("[^A-Za-z0-9]", pssw) and re.search("[A-Z]", pssw) and re.search("[a-z]", pssw) and re.search(
+                "[0-9]", pssw)):
             return {"message": "Your password needs to contain at least 1 small letter, 1 capital letter, 1 number "
-                               "and 1 special character."},400
+                               "and 1 special character."}, 400
 
         user = UserModel(users_data['username'], pssw)
         user.save_to_db()
+
         return {"message": "User created successfully!"}, 201
 
 
@@ -48,3 +56,36 @@ class UserLogin(Resource):
             }
         return {"message": "Invalid credentials."}
 
+
+class UserLogout(Resource):
+    @jwt_required
+    def delete(self):
+        jti = get_raw_jwt()['jti']
+        BLACKLIST_LOGOUT.add(jti)
+        return {"message": "Successfully logged out!"}, 200
+
+class UserLogout2(Resource):
+    @jwt_refresh_token_required
+    def delete(self):
+        jti = get_raw_jwt()['jti']
+        BLACKLIST_LOGOUT.add(jti)
+        return {"message": "Successfully logged out!"}, 200
+
+
+class DeleteAccount(Resource):
+    @fresh_jwt_required
+    def delete(self, username):
+        current_user_id = get_jwt_identity()
+        current_user = UserModel.find_by_id(current_user_id)
+        if current_user.username == username:
+            current_user.delete_from_db()
+            return {"message": f"User's account (username: {username}) deleted successfully!", "access_token": None, "refresh_token": None}, 200
+        return {"message": "You need to be logged in to the account you want to remove!"}, 401
+
+
+class RefreshToken(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        current_user_id = get_jwt_identity()
+        new_token = create_access_token(identity=current_user_id, fresh=False)
+        return {"access_token": new_token}
