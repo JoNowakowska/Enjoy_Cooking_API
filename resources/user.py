@@ -1,4 +1,6 @@
+from models.recipe import RecipeModel
 from models.user import UserModel
+from models.users_favourite_recipes import FavouriteRecipesModel
 from flask_restful import Resource, reqparse
 import re
 from werkzeug.security import safe_str_cmp
@@ -78,8 +80,15 @@ class DeleteAccount(Resource):
         current_user_id = get_jwt_identity()
         current_user = UserModel.find_by_id(current_user_id)
         if current_user.username == username:
+            user_favourite_recipe_ids = FavouriteRecipesModel.show_my_recipe_ids(current_user_id)
             current_user.delete_from_db()
+            # this is to remove the deleted user's recipes from the table 'recipes'/
+            # if no other user have it saved in their favourites:
+            for recipe_id in user_favourite_recipe_ids:
+                if not FavouriteRecipesModel.find_by_recipe_id(recipe_id[0]):
+                    RecipeModel.delete_from_db(recipe_id[0])
             return {"message": f"User's account (username: {username}) deleted successfully!", "access_token": None, "refresh_token": None}, 200
+
         return {"message": "You need to be logged in to the account you want to remove!"}, 401
 
 

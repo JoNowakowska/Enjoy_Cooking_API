@@ -6,17 +6,18 @@ class UserModel(db.Model):
     user_id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(100))
+    admin = db.Column(db.Boolean(), default=False)
 
-    favourite_recipes = db.relationship("FavouriteRecipesModel")
+    recipes = db.relationship("RecipeModel", secondary="favourite_recipes")
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, admin=False):
         self.username = username
         self.password = password
+        self.admin = admin
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
-
 
     def delete_from_db(self):
         db.session.delete(self)

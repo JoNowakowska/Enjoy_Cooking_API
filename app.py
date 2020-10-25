@@ -38,7 +38,7 @@ api.add_resource(UserLogout2, '/logout2')
 api.add_resource(DeleteAccount, "/delete-account/<string:username>")
 api.add_resource(RefreshToken, "/refresh")
 api.add_resource(Recipes, '/recipes')
-api.add_resource(Recipe, '/recipe')
+api.add_resource(Recipe, '/favourite')
 api.add_resource(FavouriteRecipe, '/favourite/<int:recipe_id>')
 
 if __name__ == '__main__':
