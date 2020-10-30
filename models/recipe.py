@@ -35,10 +35,10 @@ class RecipeModel(db.Model):
         existing_recipe = self.find_by_href(self.href)
         if existing_recipe:
             recipe_id = existing_recipe.recipe_id
-            return recipe_id
+            return recipe_id, existing_recipe
         db.session.add(self)
         db.session.commit()
-        return self.recipe_id
+        return self.recipe_id, self
 
     @classmethod
     def delete_from_db(cls, recipe_id):

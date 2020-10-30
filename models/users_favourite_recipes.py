@@ -1,5 +1,6 @@
 from db import db
 from models.recipe import RecipeModel
+from datetime import datetime
 
 
 class FavouriteRecipesModel(db.Model):
@@ -8,8 +9,8 @@ class FavouriteRecipesModel(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('users.user_id'))
     recipe_id = db.Column(db.Integer(), db.ForeignKey('recipes.recipe_id'))
     save_date = db.Column(db.DateTime())
-    category = db.Column(db.String(80))
-    comment = db.Column(db.String(180))
+    category = db.Column(db.String(80), default=None)
+    comment = db.Column(db.String(180), default=None)
 
     users = db.relationship("UserModel")
     recipes = db.relationship("RecipeModel")
@@ -25,6 +26,7 @@ class FavouriteRecipesModel(db.Model):
 
     def json(self):
         return {"recipe_id": self.recipe_id,
+                "save_date": datetime.strftime(self.save_date, "%Y-%m-%d %H:%M"),
                 "category": self.category,
                 "comment": self.comment
                 }

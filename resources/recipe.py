@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, fresh_jwt_required, get_raw_jwt, get_jwt_identity
 from models.recipe import RecipeModel
 from models.users_favourite_recipes import FavouriteRecipesModel
-import datetime
+from datetime import datetime
 
 
 class Recipe(Resource):
@@ -33,23 +33,31 @@ class Recipe(Resource):
         data = data_parser.parse_args()
 
         user_id = get_raw_jwt()['identity']
-        current_time = datetime.datetime.utcnow()
-        recipe_already_existing_in_db = RecipeModel.find_by_href(data['href'])
-        if recipe_already_existing_in_db:
-            recipe_id = recipe_already_existing_in_db.recipe_id
+        current_time = datetime.utcnow()
+        recipe_obj = RecipeModel.find_by_href(data['href'])
+        if recipe_obj:
+            recipe_id = recipe_obj.recipe_id
         else:
-            recipe_id = RecipeModel(data['title'], data['href'], data['ingredients']).save_to_db()
+            recipe_id, recipe_obj = RecipeModel(data['title'], data['href'], data['ingredients']).save_to_db()
 
         if FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id):
             return {"message":
                     "You have already this recipe saved in your favourites. "
                     "If you want to update it, use the update endpoint."}
 
-        favourite = FavouriteRecipesModel(user_id, recipe_id, data['category'], data['comment'], current_time)
+        favourite = FavouriteRecipesModel(user_id, recipe_id, current_time, data['category'], data['comment'])
         favourite.save_to_db()
 
+        just_saved_recipe_display = {"recipe_id": favourite.recipe_id,
+                                     "save_date": datetime.strftime(favourite.save_date, "%Y-%m-%d %H:%M"),
+                                     "category": favourite.category,
+                                     "comment": favourite.comment,
+                                     "recipe_title": recipe_obj.recipe_title,
+                                     "recipe_link": recipe_obj.href,
+                                     "ingredients": recipe_obj.recipe_ingredients}
+
         return {'message': "Successfully saved",
-                "saved_recipe": favourite.json()}
+                "saved_recipe": just_saved_recipe_display}
 
 
 class FavouriteRecipe(Resource):
@@ -72,8 +80,3 @@ class FavouriteRecipe(Resource):
             RecipeModel.delete_from_db(recipe_id)
 
         return {"message": f"Recipe with the id {recipe_id} removed successfully from your favourites!"}, 200
-
-
-
-
-

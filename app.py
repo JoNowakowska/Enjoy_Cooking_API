@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from db import db
 from resources.user import UserRegister, UserLogin, UserLogout, UserLogout2, DeleteAccount, RefreshToken
-from resources.recipes import Recipes
+from resources.recipes import Recipes, FavouriteRecipes
 from resources.recipe import Recipe
 from resources.recipe import FavouriteRecipe
 from models.users_favourite_recipes import FavouriteRecipesModel
@@ -38,8 +38,9 @@ api.add_resource(UserLogout2, '/logout2')
 api.add_resource(DeleteAccount, "/delete-account/<string:username>")
 api.add_resource(RefreshToken, "/refresh")
 api.add_resource(Recipes, '/recipes')
-api.add_resource(Recipe, '/favourite')
-api.add_resource(FavouriteRecipe, '/favourite/<int:recipe_id>')
+api.add_resource(FavouriteRecipes, '/favourite_recipes')
+api.add_resource(Recipe, '/favourite_recipe')
+api.add_resource(FavouriteRecipe, '/favourite_recipe/<int:recipe_id>')
 
 if __name__ == '__main__':
     db.init_app(app)
