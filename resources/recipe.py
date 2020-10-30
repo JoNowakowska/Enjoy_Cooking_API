@@ -42,8 +42,8 @@ class Recipe(Resource):
 
         if FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id):
             return {"message":
-                    "You have already this recipe saved in your favourites. "
-                    "If you want to update it, use the update endpoint."}
+                        "You have already this recipe saved in your favourites. "
+                        "If you want to update it, use the update endpoint."}
 
         favourite = FavouriteRecipesModel(user_id, recipe_id, current_time, data['category'], data['comment'])
         favourite.save_to_db()
@@ -63,11 +63,40 @@ class Recipe(Resource):
 class FavouriteRecipe(Resource):
     @jwt_required
     def get(self, recipe_id):
-        f_recipe = RecipeModel.find_by_recipe_id(recipe_id)
-        if not f_recipe:
-            return {"message": "Sorry, I couldn't find this recipe."}, 400
+        #  podobna rzecz powinien moc  admin zrobic, ale tak, zeby wyciagnac dane wszystkoch, ktorzy maja zapisana dana recipe
+        recipe_obj = RecipeModel.find_by_recipe_id(recipe_id)
+        if recipe_obj:
+            user_id = get_jwt_identity()
+            favourite = FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id)
+            if favourite:
+                recipe_to_display = {"recipe_id": favourite.recipe_id,
+                                     "save_date": datetime.strftime(favourite.save_date, "%Y-%m-%d %H:%M"),
+                                     "category": favourite.category,
+                                     "comment": favourite.comment,
+                                     "recipe_title": recipe_obj.recipe_title,
+                                     "recipe_link": recipe_obj.href,
+                                     "ingredients": recipe_obj.recipe_ingredients
+                                     }
+                return {"Recipe": recipe_to_display}
+        return {'message': "Sorry, I couldn't find this recipe in your favourites."}
 
-        return f_recipe.json()
+    @fresh_jwt_required
+    def put(self, recipe_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument("category",
+                            required=False,
+                            type=str)
+        parser.add_argument("comment",
+                            required=False,
+                            type=str)
+        data = parser.parse_args()
+        user_id = get_jwt_identity()
+        favourite = FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id)
+        if not favourite:
+            return {"message": "Sorry, I couldn't find this recipe among your favourites."}
+        favourite.update_to_db(data)
+        return {"Recipe updated!": favourite.json()}
+
 
     @fresh_jwt_required
     def delete(self, recipe_id):
