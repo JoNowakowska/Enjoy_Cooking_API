@@ -6,11 +6,11 @@ class UserModel(db.Model):
     user_id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(100))
-    admin = db.Column(db.Boolean(), default=False)
+    admin = db.Column(db.Integer())
 
     recipes = db.relationship("RecipeModel", secondary="favourite_recipes")
 
-    def __init__(self, username, password, admin=False):
+    def __init__(self, username, password, admin=0):
         self.username = username
         self.password = password
         self.admin = admin

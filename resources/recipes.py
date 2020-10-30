@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 import requests
 from external_api_key import EXTERNAL_API_KEY
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt_claims
 from datetime import datetime
 
 from models.recipe import RecipeModel
@@ -59,7 +59,6 @@ class Recipes(Resource):
 
 
 class FavouriteRecipes(Resource):
-
     @jwt_required
     def get(self):
         current_user_id = get_jwt_identity()
@@ -74,4 +73,16 @@ class FavouriteRecipes(Resource):
                                           for x in user_favourite_recipes]
 
         return {"Your favourite recipes: ": user_favourite_recipes_display}
+
+
+class RecipesStats(Resource):
+    @jwt_required
+    def get(self):
+        claims = get_jwt_claims()
+        if not claims["admin"]:
+            return {"message": "Admin privileges required"}
+        recipes_stats = FavouriteRecipesModel.count_users_by_recipe_id()
+        recipes_stats_display = [{"recipe": r.json(), "number_of_users_who_saved_it_to_favourites": n} for r, n in recipes_stats]
+        print(recipes_stats)
+        return {"all recipes saved to the db - table 'recipes'": recipes_stats_display}
 

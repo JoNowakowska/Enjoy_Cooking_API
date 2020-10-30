@@ -23,6 +23,10 @@ _data_parser.add_argument("password",
                           required=True,
                           type=str,
                           help="Please provide a password.")
+_data_parser.add_argument("admin",
+                          required=False,
+                          type=int,
+                          help="Please provide a privilege level")
 
 
 class UserRegister(Resource):
@@ -38,11 +42,14 @@ class UserRegister(Resource):
                 "[0-9]", pssw)):
             return {"message": "Your password needs to contain at least 1 small letter, 1 capital letter, 1 number "
                                "and 1 special character."}, 400
+        if users_data["admin"]:
+            user = UserModel(users_data['username'], pssw, users_data["admin"])
+        else:
+            user = UserModel(users_data['username'], pssw)
 
-        user = UserModel(users_data['username'], pssw)
         user.save_to_db()
 
-        return {"message": "User created successfully!"}, 201
+        return {"message": "User {} created successfully!".format(user.username)}, 201
 
 
 class UserLogin(Resource):

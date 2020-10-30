@@ -63,7 +63,6 @@ class Recipe(Resource):
 class FavouriteRecipe(Resource):
     @jwt_required
     def get(self, recipe_id):
-        #  podobna rzecz powinien moc  admin zrobic, ale tak, zeby wyciagnac dane wszystkoch, ktorzy maja zapisana dana recipe
         recipe_obj = RecipeModel.find_by_recipe_id(recipe_id)
         if recipe_obj:
             user_id = get_jwt_identity()
@@ -96,7 +95,6 @@ class FavouriteRecipe(Resource):
             return {"message": "Sorry, I couldn't find this recipe among your favourites."}
         favourite.update_to_db(data)
         return {"Recipe updated!": favourite.json()}
-
 
     @fresh_jwt_required
     def delete(self, recipe_id):

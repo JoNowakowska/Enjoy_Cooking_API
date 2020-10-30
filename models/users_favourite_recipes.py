@@ -69,3 +69,10 @@ class FavouriteRecipesModel(db.Model):
     def show_all(cls):
         return cls.query.all()
 
+    @classmethod
+    def count_users_by_recipe_id(cls):
+        return db.session.query(RecipeModel,
+                                db.func.count(FavouriteRecipesModel.user_id)
+                                ).join(RecipeModel, RecipeModel.recipe_id == FavouriteRecipesModel.recipe_id)\
+                                .group_by(FavouriteRecipesModel.recipe_id).all()
+
