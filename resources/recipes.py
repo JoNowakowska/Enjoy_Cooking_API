@@ -7,7 +7,6 @@ from datetime import datetime
 from models.recipe import RecipeModel
 from models.users_favourite_recipes import FavouriteRecipesModel
 
-
 request_parser = reqparse.RequestParser()
 request_parser.add_argument('ingredients',
                             required=True,
@@ -21,7 +20,7 @@ request_parser.add_argument('dish',
                             help="""Enter a dish you have in mind.""")
 
 
-class Recipes(Resource):
+class NewRecipes(Resource):
     @jwt_required
     def post(self):
         users_data = request_parser.parse_args()
@@ -52,11 +51,6 @@ class Recipes(Resource):
 
         return {f'''Recipes with the ingredients of your choice ({users_data['ingredients']})''': list_of_results}
 
-    def get(self):
-        all_recipes = RecipeModel.show_all()
-        all_list = [a.json() for a in all_recipes]
-        return {"all recipes": all_list}
-
 
 class FavouriteRecipes(Resource):
     @jwt_required
@@ -81,8 +75,10 @@ class RecipesStats(Resource):
         claims = get_jwt_claims()
         if not claims["admin"]:
             return {"message": "Admin privileges required"}
+        number_unique_recipes_in_db = RecipeModel.count_all()[0]
         recipes_stats = FavouriteRecipesModel.count_users_by_recipe_id()
-        recipes_stats_display = [{"recipe": r.json(), "number_of_users_who_saved_it_to_favourites": n} for r, n in recipes_stats]
-        print(recipes_stats)
-        return {"all recipes saved to the db - table 'recipes'": recipes_stats_display}
-
+        recipes_stats_display = [{"recipe": r.json(),
+                                  "number_of_users_who_have_it_saved_to_favourites": n}
+                                 for r, n in recipes_stats]
+        return {"a number of recipes saved into the table 'recipes'": number_unique_recipes_in_db,
+                "details of the recipes and a number of people who saved each of them as their favourites": recipes_stats_display}

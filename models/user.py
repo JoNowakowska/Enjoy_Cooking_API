@@ -1,4 +1,5 @@
 from db import db
+from models.users_favourite_recipes import FavouriteRecipesModel
 
 
 class UserModel(db.Model):
@@ -33,3 +34,13 @@ class UserModel(db.Model):
         user = cls.query.filter_by(user_id=user_id).first()
         return user
 
+    @classmethod
+    def count_all(cls):
+        return db.session.query(db.func.count(UserModel.user_id)).first()
+
+    @classmethod
+    def show_all(cls):
+        return db.session.query(UserModel, db.func.count(FavouriteRecipesModel.recipe_id)) \
+            .join(FavouriteRecipesModel, UserModel.user_id == FavouriteRecipesModel.user_id, isouter=True) \
+            .group_by(UserModel.user_id) \
+            .order_by(UserModel.admin.desc()).all()

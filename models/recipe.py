@@ -47,5 +47,5 @@ class RecipeModel(db.Model):
         db.session.commit()
 
     @classmethod
-    def show_all(cls):
-        return cls.query.all()
+    def count_all(cls):
+        return db.session.query(db.func.count(RecipeModel.recipe_id)).first()

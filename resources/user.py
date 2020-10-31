@@ -10,7 +10,8 @@ from flask_jwt_extended import (create_access_token,
                                 get_jwt_identity,
                                 fresh_jwt_required,
                                 jwt_required,
-                                get_raw_jwt
+                                get_raw_jwt,
+                                get_jwt_claims
                                 )
 from blacklist import BLACKLIST_LOGOUT
 
@@ -73,6 +74,7 @@ class UserLogout(Resource):
         BLACKLIST_LOGOUT.add(jti)
         return {"message": "Successfully logged out!"}, 200
 
+
 class UserLogout2(Resource):
     @jwt_refresh_token_required
     def delete(self):
@@ -86,17 +88,39 @@ class DeleteAccount(Resource):
     def delete(self, username):
         current_user_id = get_jwt_identity()
         current_user = UserModel.find_by_id(current_user_id)
-        if current_user.username == username:
-            user_favourite_recipe_ids = FavouriteRecipesModel.show_my_recipe_ids(current_user_id)
-            current_user.delete_from_db()
-            # this is to remove the deleted user's recipes from the table 'recipes'/
-            # if no other user have it saved in their favourites:
-            for recipe_id in user_favourite_recipe_ids:
-                if not FavouriteRecipesModel.find_by_recipe_id(recipe_id[0]):
-                    RecipeModel.delete_from_db(recipe_id[0])
-            return {"message": f"User's account (username: {username}) deleted successfully!", "access_token": None, "refresh_token": None}, 200
+        if not current_user.username == username:
+            return {"message": "You need to be logged in to the account you want to remove!"}, 401
 
-        return {"message": "You need to be logged in to the account you want to remove!"}, 401
+        user_favourite_recipe_ids = FavouriteRecipesModel.show_my_recipe_ids(current_user_id)
+        print(user_favourite_recipe_ids)
+        current_user.delete_from_db()
+        # this is to remove the deleted user's recipes from the table 'recipes'/
+        # if no other user have it saved in their favourites:
+        for recipe_id in user_favourite_recipe_ids:
+            if not FavouriteRecipesModel.find_by_recipe_id(recipe_id[0]):
+                RecipeModel.delete_from_db(recipe_id[0])
+        return {"message": f"User's account (username: {username}) deleted successfully!",
+                "access_token": None,
+                "refresh_token": None}, 200
+
+
+class AdminDeleteAccount(Resource):
+    @jwt_required
+    def delete(self, user_id):
+        claims = get_jwt_claims()
+        if not claims["admin"]:
+            return {"message": "Admin permission required!"}, 401
+        print(type(user_id))
+        user_to_delete = UserModel.find_by_id(user_id)
+        user_favourite_recipe_ids = FavouriteRecipesModel.show_my_recipe_ids(user_id)
+        print(user_favourite_recipe_ids)
+        user_to_delete.delete_from_db()
+        # this is to remove the deleted user's recipes from the table 'recipes'/
+        # if no other user have it saved in their favourites:
+        for recipe_id in user_favourite_recipe_ids:
+            if not FavouriteRecipesModel.find_by_recipe_id(recipe_id[0]):
+                RecipeModel.delete_from_db(recipe_id[0])
+        return {"message": f"User's account (user_id: {user_id}) deleted successfully!"}, 200
 
 
 class RefreshToken(Resource):
@@ -105,3 +129,28 @@ class RefreshToken(Resource):
         current_user_id = get_jwt_identity()
         new_token = create_access_token(identity=current_user_id, fresh=False)
         return {"access_token": new_token}
+
+
+class UsersStats(Resource):
+    @jwt_required
+    def get(self):
+        claims = get_jwt_claims()
+        if not claims["admin"]:
+            return {"message": "Admin permission required!"}, 401
+
+        number_of_users = UserModel.count_all()[0]
+
+        users_details = [
+            {
+                "admin": u.admin,
+                "user_id": u.user_id,
+                "username": u.username,
+                "number_of_favourite_recipes_saved": n
+            }
+            for (u, n) in UserModel.show_all()
+        ]
+
+        return {
+                "number_of_users_in_db": number_of_users,
+                "users_details": users_details
+                }, 200
