@@ -1,0 +1,496 @@
+{
+	"info": {
+		"_postman_id": "9ce34714-63c0-4d77-a01b-092484ae1211",
+		"name": "my_app 6 Recipes RESTful API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"joanna\",\r\n\"password\": \"As1!\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/register",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "acbbcba2-48bd-493f-b73a-89e437cfbbf2",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"postman.setEnvironmentVariable(\"access_token\", jsonData.access_token);\r",
+							"\r",
+							"tests[\"Access token returned by responseBody\"] = responseBody.has(\"access_token\");\r",
+							"\r",
+							"postman.setEnvironmentVariable(\"refresh_token\", jsonData.refresh_token);\r",
+							"\r",
+							"tests[\"Refresh token returned by responseBody\"] = responseBody.has(\"refresh_token\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"admin3\",\r\n\"password\": \"As1!\"}"
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/refresh",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea305a0a-bcf4-4778-a771-04d9b2c168f1",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"postman.setEnvironmentVariable(\"access_token\", jsonData.access_token);\r",
+							"\r",
+							"tests[\"Access token returned by responseBody\"] = responseBody.has(\"access_token\")"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{refresh_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/refresh",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"refresh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/new_recipes",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"ingredients\": \"chicken\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/recipes",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"recipes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/favourite_recipe",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n            \"title\": \"Chicken Fingers \\r\\n\\t\\t\\n\",\r\n            \"href\": \"http://www.kraftfoods.com/kf/recipes/chicken-fingers-106219.aspx\",\r\n            \"ingredients\": \"chicken, chicken\",\r\n            \"category\": \"salads\",\r\n            \"comment\": \"this is for Friday's dinner\"\r\n}"
+				},
+				"url": {
+					"raw": "{{url}}/favourite_recipe",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"favourite_recipe"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/favourite_recipes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/favourite_recipes",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"favourite_recipes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/favourite_recipe/<recipe_id>",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/favourite_recipe/2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"favourite_recipe",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/favourite_recipe/<recipe_id>",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"comment\": \"update\",\r\n\"category\": \"breakfast\"}"
+				},
+				"url": {
+					"raw": "{{url}}/favourite_recipe/7",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"favourite_recipe",
+						"7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/favourite_recipe/<recipe_id>",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/favourite_recipe/2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"favourite_recipe",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/logout",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/logout",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/logout2",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{refresh_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/logout2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"logout2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/delete_account/<username>",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fd19da32-e6d5-4679-af77-3b43fb057690",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"postman.setEnvironmentVariable(\"access_token\", jsonData.access_token);\r",
+							"\r",
+							"tests[\"Access token returned by responseBody\"] = responseBody.has(\"access_token\");\r",
+							"\r",
+							"postman.setEnvironmentVariable(\"refresh_token\", jsonData.refresh_token);\r",
+							"\r",
+							"tests[\"Refresh token returned by responseBody\"] = responseBody.has(\"refresh_token\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{url}}//delete_account/joanna5",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"",
+						"delete_account",
+						"joanna5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/admin_delete_account/<user_id>",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/admin_delete_account/<user_id>",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"admin_delete_account",
+						"<user_id>"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users_stats",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/users_stats",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users_stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/recipes_stats",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/recipes_stats",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"recipes_stats"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
