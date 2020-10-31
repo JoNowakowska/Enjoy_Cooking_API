@@ -16,9 +16,9 @@ from resources.recipes import NewRecipes, FavouriteRecipes, RecipesStats
 from resources.recipe import Recipe
 from resources.recipe import FavouriteRecipe
 from models.users_favourite_recipes import FavouriteRecipesModel
-from flask_jwt_extended import JWTManager, get_raw_jwt
+from flask_jwt_extended import JWTManager
 from blacklist import BLACKLIST_LOGOUT
-from test import Test
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -65,7 +65,7 @@ api.add_resource(NewRecipes, '/new_recipes')
 api.add_resource(FavouriteRecipes, '/favourite_recipes')
 api.add_resource(Recipe, '/favourite_recipe')
 api.add_resource(FavouriteRecipe, '/favourite_recipe/<int:recipe_id>')
-api.add_resource(Test, '/test')
+
 
 if __name__ == '__main__':
     db.init_app(app)

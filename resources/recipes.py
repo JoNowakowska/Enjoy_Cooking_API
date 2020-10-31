@@ -49,7 +49,7 @@ class NewRecipes(Resource):
 
         list_of_results = res['results']
 
-        return {f'''Recipes with the ingredients of your choice ({users_data['ingredients']})''': list_of_results}
+        return {f'''Recipes with the ingredients of your choice ({users_data['ingredients']})''': list_of_results}, 200
 
 
 class FavouriteRecipes(Resource):
@@ -66,7 +66,7 @@ class FavouriteRecipes(Resource):
                                            "ingredients": x[1].recipe_ingredients}
                                           for x in user_favourite_recipes]
 
-        return {"Your favourite recipes: ": user_favourite_recipes_display}
+        return {"Your favourite recipes: ": user_favourite_recipes_display}, 200
 
 
 class RecipesStats(Resource):
@@ -74,7 +74,7 @@ class RecipesStats(Resource):
     def get(self):
         claims = get_jwt_claims()
         if not claims["admin"]:
-            return {"message": "Admin privileges required"}
+            return {"message": "Admin privileges required"}, 403
         number_unique_recipes_in_db = RecipeModel.count_all()[0]
         recipes_stats = FavouriteRecipesModel.show_stats()
         recipes_stats_display = [{"recipe": r.json(),
@@ -84,4 +84,4 @@ class RecipesStats(Resource):
 
         return {"a number of recipes saved into the table 'recipes'": number_unique_recipes_in_db,
                 "details of the recipes and a number of people "
-                "who saved each of them as their favourites": recipes_stats_display}
+                "who saved each of them as their favourites": recipes_stats_display}, 200

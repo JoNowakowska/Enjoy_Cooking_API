@@ -63,8 +63,8 @@ class UserLogin(Resource):
             return {
                 "access_token": access_token,
                 "refresh_token": refresh_token
-            }
-        return {"message": "Invalid credentials."}
+            }, 200
+        return {"message": "Invalid credentials."}, 401
 
 
 class UserLogout(Resource):
@@ -109,7 +109,7 @@ class AdminDeleteAccount(Resource):
     def delete(self, user_id):
         claims = get_jwt_claims()
         if not claims["admin"]:
-            return {"message": "Admin permission required!"}, 401
+            return {"message": "Admin permission required!"}, 403
         print(type(user_id))
         user_to_delete = UserModel.find_by_id(user_id)
         user_favourite_recipe_ids = FavouriteRecipesModel.show_my_recipe_ids(user_id)
@@ -128,7 +128,7 @@ class RefreshToken(Resource):
     def post(self):
         current_user_id = get_jwt_identity()
         new_token = create_access_token(identity=current_user_id, fresh=False)
-        return {"access_token": new_token}
+        return {"access_token": new_token}, 200
 
 
 class UsersStats(Resource):
@@ -136,7 +136,7 @@ class UsersStats(Resource):
     def get(self):
         claims = get_jwt_claims()
         if not claims["admin"]:
-            return {"message": "Admin permission required!"}, 401
+            return {"message": "Admin permission required!"}, 403
 
         number_of_users = UserModel.count_all()[0]
 

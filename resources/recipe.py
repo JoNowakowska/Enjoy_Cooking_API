@@ -43,7 +43,7 @@ class Recipe(Resource):
         if FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id):
             return {"message":
                         "You have already this recipe saved in your favourites. "
-                        "If you want to update it, use the update endpoint."}
+                        "If you want to update it, use the update endpoint."}, 400
 
         favourite = FavouriteRecipesModel(user_id, recipe_id, current_time, data['category'], data['comment'])
         favourite.save_to_db()
@@ -57,7 +57,7 @@ class Recipe(Resource):
                                      "ingredients": recipe_obj.recipe_ingredients}
 
         return {'message': "Successfully saved",
-                "saved_recipe": just_saved_recipe_display}
+                "saved_recipe": just_saved_recipe_display}, 201
 
 
 class FavouriteRecipe(Resource):
@@ -76,8 +76,8 @@ class FavouriteRecipe(Resource):
                                      "recipe_link": recipe_obj.href,
                                      "ingredients": recipe_obj.recipe_ingredients
                                      }
-                return {"Recipe": recipe_to_display}
-        return {'message': "Sorry, I couldn't find this recipe in your favourites."}
+                return {"Recipe": recipe_to_display}, 200
+        return {'message': "Sorry, I couldn't find this recipe in your favourites."}, 404
 
     @fresh_jwt_required
     def put(self, recipe_id):
@@ -92,16 +92,16 @@ class FavouriteRecipe(Resource):
         user_id = get_jwt_identity()
         favourite = FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id)
         if not favourite:
-            return {"message": "Sorry, I couldn't find this recipe among your favourites."}
+            return {"message": "Sorry, I couldn't find this recipe among your favourites."}, 404
         favourite.update_to_db(data)
-        return {"Recipe updated!": favourite.json()}
+        return {"Recipe updated!": favourite.json()}, 201
 
     @fresh_jwt_required
     def delete(self, recipe_id):
         user_id = get_jwt_identity()
         recipe = FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id)
         if not recipe:
-            return {"message": "I couldn't find this recipe in your favourites."}, 400
+            return {"message": "I couldn't find this recipe in your favourites."}, 404
         recipe.delete_from_db()
         if not FavouriteRecipesModel.find_by_recipe_id(recipe_id):
             RecipeModel.delete_from_db(recipe_id)
