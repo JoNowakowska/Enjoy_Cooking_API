@@ -145,7 +145,8 @@ class UsersStats(Resource):
                 "admin": u.admin,
                 "user_id": u.user_id,
                 "username": u.username,
-                "number_of_favourite_recipes_saved": n
+                "number_of_favourite_recipes_saved": n,
+                "ids_of_favourite_recipes": [x.recipe_id for x in u.recipes]
             }
             for (u, n) in UserModel.show_all()
         ]

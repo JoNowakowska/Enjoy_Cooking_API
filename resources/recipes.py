@@ -76,9 +76,12 @@ class RecipesStats(Resource):
         if not claims["admin"]:
             return {"message": "Admin privileges required"}
         number_unique_recipes_in_db = RecipeModel.count_all()[0]
-        recipes_stats = FavouriteRecipesModel.count_users_by_recipe_id()
+        recipes_stats = FavouriteRecipesModel.show_stats()
         recipes_stats_display = [{"recipe": r.json(),
-                                  "number_of_users_who_have_it_saved_to_favourites": n}
+                                  "number_of_users_who_have_it_saved_to_favourites": n,
+                                  "ids_of_users_who_saved_it_to_favourites": [x.user_id for x in r.users]}
                                  for r, n in recipes_stats]
+
         return {"a number of recipes saved into the table 'recipes'": number_unique_recipes_in_db,
-                "details of the recipes and a number of people who saved each of them as their favourites": recipes_stats_display}
+                "details of the recipes and a number of people "
+                "who saved each of them as their favourites": recipes_stats_display}
