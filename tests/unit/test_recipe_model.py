@@ -1,19 +1,18 @@
-from unittest import TestCase
+from tests.unit.base_test import BaseTest
 from models.recipe import RecipeModel
-from models.users_favourite_recipes import FavouriteRecipesModel
-from models.user import UserModel
 
 
-class RecipeModelTest(TestCase):
+class RecipeModelTest(BaseTest):
+    def setUp(self) -> None:
+        self.new_recipe = RecipeModel("Test title", "Test http", "Test ingredients")
+        self.new_recipe.recipe_id = 1
+
     def test_init(self):
-        new_recipe = RecipeModel("Test title", "Test http", "Test ingredients")
-        self.assertEqual(new_recipe.recipe_title, "Test title")
-        self.assertEqual(new_recipe.href, "Test http")
-        self.assertEqual(new_recipe.recipe_ingredients, "Test ingredients")
+        self.assertEqual(self.new_recipe.recipe_title, "Test title")
+        self.assertEqual(self.new_recipe.href, "Test http")
+        self.assertEqual(self.new_recipe.recipe_ingredients, "Test ingredients")
 
     def test_json(self):
-        new_recipe = RecipeModel("Test title", "Test http", "Test ingredients")
-        new_recipe.recipe_id = 1
         expected_output = {
             "recipe_id": 1,
             "recipe_title": "Test title",
@@ -21,4 +20,4 @@ class RecipeModelTest(TestCase):
             "recipe_ingredients": "Test ingredients"
         }
 
-        self.assertDictEqual(new_recipe.json(), expected_output)
+        self.assertDictEqual(self.new_recipe.json(), expected_output)

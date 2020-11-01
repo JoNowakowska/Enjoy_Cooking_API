@@ -22,6 +22,7 @@ from blacklist import BLACKLIST_LOGOUT
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['JWT_SECRET_KEY'] = "sdjfknfvlkdm vdnskzldcnvnharewlkdmvc "
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ("access", "refresh")

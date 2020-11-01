@@ -1,10 +1,8 @@
-from unittest import TestCase
-from models.recipe import RecipeModel
-from models.users_favourite_recipes import FavouriteRecipesModel
+from tests.unit.base_test import BaseTest
 from models.user import UserModel
 
 
-class UserModelTest(TestCase):
+class UserModelTest(BaseTest):
     def test_init_admin(self):
         user = UserModel("Test username", "Test password", 1)
         user.user_id = 1
