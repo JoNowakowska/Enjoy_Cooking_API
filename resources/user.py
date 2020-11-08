@@ -67,6 +67,14 @@ class UserLogin(Resource):
         return {"message": "Invalid credentials."}, 401
 
 
+class RefreshToken(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        current_user_id = get_jwt_identity()
+        new_token = create_access_token(identity=current_user_id, fresh=False)
+        return {"access_token": new_token}, 200
+
+
 class UserLogout(Resource):
     @jwt_required
     def delete(self):
@@ -121,14 +129,6 @@ class AdminDeleteAccount(Resource):
             if not FavouriteRecipesModel.find_by_recipe_id(recipe_id[0]):
                 RecipeModel.delete_from_db(recipe_id[0])
         return {"message": f"User's account (user_id: {user_id}) deleted successfully!"}, 200
-
-
-class RefreshToken(Resource):
-    @jwt_refresh_token_required
-    def post(self):
-        current_user_id = get_jwt_identity()
-        new_token = create_access_token(identity=current_user_id, fresh=False)
-        return {"access_token": new_token}, 200
 
 
 class UsersStats(Resource):

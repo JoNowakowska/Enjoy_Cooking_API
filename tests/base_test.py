@@ -14,6 +14,8 @@ from models.user import UserModel
 from models.recipe import RecipeModel
 from models.users_favourite_recipes import FavouriteRecipesModel
 
+URL = "http://127.0.0.1:5000"
+
 
 class BaseTest(TestCase):
     def setUp(self) -> None:

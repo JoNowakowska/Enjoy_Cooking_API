@@ -54,11 +54,11 @@ def create_tables():
 
 api.add_resource(UserRegister, '/register')
 api.add_resource(UserLogin, '/login')
+api.add_resource(RefreshToken, "/refresh")
 api.add_resource(UserLogout, '/logout')
 api.add_resource(UserLogout2, '/logout2')
 api.add_resource(DeleteAccount, "/delete_account/<string:username>")
 api.add_resource(AdminDeleteAccount, "/admin_delete_account/<int:user_id>")
-api.add_resource(RefreshToken, "/refresh")
 api.add_resource(RecipesStats, "/recipes_stats")
 api.add_resource(UsersStats, "/users_stats")
 api.add_resource(NewRecipes, '/new_recipes')
