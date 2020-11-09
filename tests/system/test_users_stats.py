@@ -121,6 +121,7 @@ class TestUserStats(BaseTest):
                         }
                     ]
                 }
+
                 self.maxDiff = None
                 self.assertDictEqual(json.loads(response.data), expected,
                                      "The /users_stats GET returns wrong response.")
