@@ -100,7 +100,6 @@ class DeleteAccount(Resource):
             return {"message": "You need to be logged in to the account you want to remove!"}, 401
 
         user_favourite_recipe_ids = FavouriteRecipesModel.show_my_recipe_ids(current_user_id)
-        print(user_favourite_recipe_ids)
         current_user.delete_from_db()
         # this is to remove the deleted user's recipes from the table 'recipes'/
         # if no other user have it saved in their favourites:
@@ -118,10 +117,8 @@ class AdminDeleteAccount(Resource):
         claims = get_jwt_claims()
         if not claims["admin"]:
             return {"message": "Admin permission required!"}, 403
-        print(type(user_id))
         user_to_delete = UserModel.find_by_id(user_id)
         user_favourite_recipe_ids = FavouriteRecipesModel.show_my_recipe_ids(user_id)
-        print(user_favourite_recipe_ids)
         user_to_delete.delete_from_db()
         # this is to remove the deleted user's recipes from the table 'recipes'/
         # if no other user have it saved in their favourites:

@@ -42,8 +42,8 @@ class Recipe(Resource):
 
         if FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id):
             return {"message":
-                        "You have already this recipe saved in your favourites. "
-                        "If you want to update it, use the update endpoint."}, 400
+                    "You have already this recipe saved in your favourites. "
+                    "If you want to update it, use the update endpoint."}, 400
 
         favourite = FavouriteRecipesModel(user_id, recipe_id, current_time, data['category'], data['comment'])
         favourite.save_to_db()
