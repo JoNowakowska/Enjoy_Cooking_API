@@ -44,7 +44,6 @@ class NewRecipes(Resource):
         for x in range(10):
             payload.update({"p": page_no})
             response = requests.get(url, params=payload, headers=headers)
-            print(response.url)
             res = response.json()['results']
             if len(res) > 0:
                 list_of_results.append(res)
