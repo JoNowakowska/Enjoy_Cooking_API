@@ -48,13 +48,7 @@ class Recipe(Resource):
         favourite = FavouriteRecipesModel(user_id, recipe_id, current_time, data['category'], data['comment'])
         favourite.save_to_db()
 
-        just_saved_recipe_display = {"recipe_id": favourite.recipe_id,
-                                     "save_date": datetime.strftime(favourite.save_date, "%Y-%m-%d %H:%M"),
-                                     "category": favourite.category,
-                                     "comment": favourite.comment,
-                                     "recipe_title": recipe_obj.recipe_title,
-                                     "recipe_link": recipe_obj.href,
-                                     "ingredients": recipe_obj.recipe_ingredients}
+        just_saved_recipe_display = favourite.json()
 
         return {'message': "Successfully saved",
                 "saved_recipe": just_saved_recipe_display}, 201
@@ -68,15 +62,9 @@ class FavouriteRecipe(Resource):
             user_id = get_jwt_identity()
             favourite = FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id)
             if favourite:
-                recipe_to_display = {"recipe_id": favourite.recipe_id,
-                                     "save_date": datetime.strftime(favourite.save_date, "%Y-%m-%d %H:%M"),
-                                     "category": favourite.category,
-                                     "comment": favourite.comment,
-                                     "recipe_title": recipe_obj.recipe_title,
-                                     "recipe_link": recipe_obj.href,
-                                     "ingredients": recipe_obj.recipe_ingredients
-                                     }
+                recipe_to_display = favourite.json()
                 return {"Recipe": recipe_to_display}, 200
+
         return {'message': "Sorry, I couldn't find this recipe in your favourites."}, 404
 
     @fresh_jwt_required
@@ -101,7 +89,7 @@ class FavouriteRecipe(Resource):
         user_id = get_jwt_identity()
         recipe = FavouriteRecipesModel.find_by_recipe_id_user_id(recipe_id, user_id)
         if not recipe:
-            return {"message": "I couldn't find this recipe in your favourites."}, 404
+            return {"message": "Sorry, I couldn't find this recipe among your favourites."}, 404
         recipe.delete_from_db()
         if not FavouriteRecipesModel.find_by_recipe_id(recipe_id):
             RecipeModel.delete_from_db(recipe_id)

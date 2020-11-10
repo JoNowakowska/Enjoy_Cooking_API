@@ -28,7 +28,10 @@ class FavouriteRecipesModel(db.Model):
         return {"recipe_id": self.recipe_id,
                 "save_date": datetime.strftime(self.save_date, "%Y-%m-%d %H:%M"),
                 "category": self.category,
-                "comment": self.comment
+                "comment": self.comment,
+                "recipe_title": self.recipes.recipe_title,
+                "recipe_link": self.recipes.href,
+                "ingredients": self.recipes.recipe_ingredients
                 }
 
     def save_to_db(self):
@@ -56,10 +59,9 @@ class FavouriteRecipesModel(db.Model):
 
     @classmethod
     def show_mine(cls, user_id):
-        return db.session.query(FavouriteRecipesModel, RecipeModel)\
-                .join(FavouriteRecipesModel, RecipeModel.recipe_id == FavouriteRecipesModel.recipe_id)\
-                .filter_by(user_id=user_id)\
-                .all()
+        return db.session.query(FavouriteRecipesModel) \
+            .filter_by(user_id=user_id) \
+            .all()
 
     @classmethod
     def show_my_recipe_ids(cls, user_id):  # -> list of tuples, e.g. [(3,), (4,)]
@@ -73,6 +75,5 @@ class FavouriteRecipesModel(db.Model):
     def show_stats(cls):
         return db.session.query(RecipeModel,
                                 db.func.count(FavouriteRecipesModel.user_id)
-                                ).join(RecipeModel, RecipeModel.recipe_id == FavouriteRecipesModel.recipe_id)\
-                                .group_by(FavouriteRecipesModel.recipe_id).all()
-
+                                ).join(RecipeModel, RecipeModel.recipe_id == FavouriteRecipesModel.recipe_id) \
+            .group_by(FavouriteRecipesModel.recipe_id).all()

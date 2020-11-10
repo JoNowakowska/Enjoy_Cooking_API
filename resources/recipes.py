@@ -57,14 +57,7 @@ class FavouriteRecipes(Resource):
     def get(self):
         current_user_id = get_jwt_identity()
         user_favourite_recipes = FavouriteRecipesModel.show_mine(current_user_id)
-        user_favourite_recipes_display = [{"recipe_id": x[0].recipe_id,
-                                           "save_date": datetime.strftime(x[0].save_date, "%Y-%m-%d %H:%M"),
-                                           "category": x[0].category,
-                                           "comment": x[0].comment,
-                                           "recipe_title": x[1].recipe_title,
-                                           "recipe_link": x[1].href,
-                                           "ingredients": x[1].recipe_ingredients}
-                                          for x in user_favourite_recipes]
+        user_favourite_recipes_display = [x.json() for x in user_favourite_recipes]
 
         return {"Your favourite recipes: ": user_favourite_recipes_display}, 200
 

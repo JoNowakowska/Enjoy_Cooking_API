@@ -44,15 +44,18 @@ class TestUsersFavouriteRecipes(BaseTest):
         with self.app_context():
             self.f_recipe.save_to_db()
             favourite_recipe = FavouriteRecipesModel.find_by_recipe_id_user_id(1, 1)
-            expected = {
-                "recipe_id": 1,
-                "save_date": datetime.strftime(self.time_now, "%Y-%m-%d %H:%M"),
-                "category": "Test cat",
-                "comment": "Test comment"
-            }
+
+            expected = {"recipe_id": 1,
+                        "save_date": datetime.strftime(self.time_now, "%Y-%m-%d %H:%M"),
+                        "category": "Test cat",
+                        "comment": "Test comment",
+                        "recipe_title": "Test title",
+                        "recipe_link": "Test link",
+                        "ingredients": "Test ingredients"
+                        }
 
             self.assertEqual(favourite_recipe.json(), expected,
-                             "Json method does not return a desired dictionary.")
+                             "UsersFavouriteRecipes.json() method does not return a desired dictionary.")
 
     def test_update_to_db(self):
         with self.app_context():
@@ -71,36 +74,25 @@ class TestUsersFavouriteRecipes(BaseTest):
             recipe2.save_to_db()
             f_recipe2 = FavouriteRecipesModel(self.user.user_id, recipe2.recipe_id, self.time_now)
             f_recipe2.save_to_db()
-            my_recipes = [(
-                fr.recipe_id,
-                fr.save_date,
-                fr.category,
-                fr.comment,
-                rm.recipe_title,
-                rm.href,
-                rm.recipe_ingredients
-            )
-                for (fr, rm) in FavouriteRecipesModel.show_mine(self.user.user_id)]
+            my_recipes = [x.json() for x in FavouriteRecipesModel.show_mine(self.user.user_id)]
 
             expected = [
-                (
-                    1,
-                    self.time_now,
-                    'Test cat',
-                    'Test comment',
-                    'Test title',
-                    'Test link',
-                    'Test ingredients'
-                ),
-                (
-                    2,
-                    self.time_now,
-                    None,
-                    None,
-                    'Test title 2',
-                    'Test link 2',
-                    'Test ingredients 2'
-                )
+                {
+                    "recipe_id": 1,
+                    "save_date": datetime.strftime(self.time_now, "%Y-%m-%d %H:%M"),
+                    "category": "Test cat",
+                    "comment": "Test comment",
+                    "recipe_title": "Test title",
+                    "recipe_link": "Test link",
+                    "ingredients": "Test ingredients"},
+                {
+                    "recipe_id": 2,
+                    "save_date": datetime.strftime(self.time_now, "%Y-%m-%d %H:%M"),
+                    "category": None,
+                    "comment": None,
+                    "recipe_title": "Test title 2",
+                    "recipe_link": "Test link 2",
+                    "ingredients": "Test ingredients 2"}
             ]
 
             self.assertListEqual(my_recipes, expected,
