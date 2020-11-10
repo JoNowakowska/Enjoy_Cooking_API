@@ -11,11 +11,11 @@ class TestUserLogin(BaseTest):
     def test_post_success(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("Test name", "aA1!").save_to_db()
+                UserModel("TestUsername", "TestPwd1!").save_to_db()
                 response = client.post(f"{URL}/login",
                                        data=json.dumps({
-                                           "username": "Test name",
-                                           "password": "aA1!"
+                                           "username": "TestUsername",
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -33,8 +33,8 @@ class TestUserLogin(BaseTest):
             with self.app() as client:
                 response = client.post(f"{URL}/login",
                                        data=json.dumps({
-                                           "username": "Test name",
-                                           "password": "aA1!"
+                                           "username": "TestUsername",
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -52,11 +52,11 @@ class TestRefreshToken(BaseTest):
     def test_post_refresh_token(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("Test name", "aA1!").save_to_db()
+                UserModel("TestUsername", "TestPwd1!").save_to_db()
                 response = client.post(f"{URL}/login",
                                        data=json.dumps({
-                                           "username": "Test name",
-                                           "password": "aA1!"
+                                           "username": "TestUsername",
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -77,11 +77,11 @@ class TestUserLogoutAndLogout2(BaseTest):
     def test_delete(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("Test name", "aA1!").save_to_db()
+                UserModel("TestUsername", "TestPwd1!").save_to_db()
                 response = client.post(f"{URL}/login",
                                        data=json.dumps({
-                                           "username": "Test name",
-                                           "password": "aA1!"
+                                           "username": "TestUsername",
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -177,7 +177,7 @@ class TestDeleteAccount(BaseTest):
     def test_delete_when_2_users_saved_same_recipe(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("User2", "pwd1!").save_to_db()
+                UserModel("TestUsername2", "TestPwd1!").save_to_db()
                 FavouriteRecipesModel(2, self.recipe_id1, self.current_time,
                                       "Category of the second user", "User2's comment").save_to_db()
 
@@ -227,12 +227,12 @@ class TestAdminDeleteAccount(BaseTest):
     def test_delete_when_not_admin(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("TestUser", "Pwd1!").save_to_db()
-                UserModel("TestUserToBeDeleted", "Pwd1!").save_to_db()
+                UserModel("TestUsername", "TestPwd1!").save_to_db()
+                UserModel("TestUserNameToBeDeleted", "TestPwd1!").save_to_db()
                 response = client.post(f"{URL}/login",
                                        data=json.dumps({
-                                           "username": "TestUser",
-                                           "password": "Pwd1!"
+                                           "username": "TestUsername",
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -241,8 +241,8 @@ class TestAdminDeleteAccount(BaseTest):
                 access_token = json.loads(response.data)['access_token']
                 response = client.delete(f"{URL}/admin_delete_account/2",
                                          data=json.dumps({
-                                             "username": "TestUser",
-                                             "password": "Pwd1!"
+                                             "username": "TestUsername",
+                                             "password": "TestPwd1!"
                                          }),
                                          headers={
                                              "Content-Type": "application/json",
@@ -258,8 +258,8 @@ class TestAdminDeleteAccount(BaseTest):
     def test_delete_when_admin(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("TestAdmin", "Pwd1!", admin=1).save_to_db()
-                UserModel("TestUserToBeDeleted", "Pwd1!").save_to_db()
+                UserModel("TestAdmin", "TestPwd1!", admin=1).save_to_db()
+                UserModel("TestUsernameToBeDeleted", "TestPwd1!").save_to_db()
 
                 self.current_time = datetime.utcnow()
                 self.recipe_id1, _ = RecipeModel("Title1", "Url1", "Ingredients1, test1").save_to_db()
@@ -285,7 +285,7 @@ class TestAdminDeleteAccount(BaseTest):
                 response = client.post(f"{URL}/login",
                                        data=json.dumps({
                                            "username": "TestAdmin",
-                                           "password": "Pwd1!"
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -293,12 +293,7 @@ class TestAdminDeleteAccount(BaseTest):
                                        )
                 access_token = json.loads(response.data)['access_token']
                 response = client.delete(f"{URL}/admin_delete_account/2",
-                                         data=json.dumps({
-                                             "username": "TestUser",
-                                             "password": "Pwd1!"
-                                         }),
                                          headers={
-                                             "Content-Type": "application/json",
                                              "Authorization": f"Bearer {access_token}"
                                          }
                                          )

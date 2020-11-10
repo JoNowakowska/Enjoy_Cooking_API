@@ -109,9 +109,9 @@ class TestFavouriteRecipes(BaseTest):
                 recipe_id2, _ = RecipeModel("Title2", "Url2", "Ingredients2, test2").save_to_db()
                 recipe_id3, _ = RecipeModel("Title3", "Url3", "Ingredients3, test3").save_to_db()
                 FavouriteRecipesModel(1, recipe_id1, current_time,
-                                      "Test category - salad", "Test comment - for Friday's dinner").save_to_db()
+                                      "Meat", "The most delicious ever!").save_to_db()
                 FavouriteRecipesModel(1, recipe_id2, current_time,
-                                      "Test category - snack", "Test comment - for Sunday's break.").save_to_db()
+                                      "Meat", "The most delicious ever!").save_to_db()
                 FavouriteRecipesModel(1, recipe_id3, current_time
                                       ).save_to_db()
 
@@ -137,15 +137,15 @@ class TestFavouriteRecipes(BaseTest):
                     [
                         {"recipe_id": 1,
                          "save_date": datetime.strftime(current_time, "%Y-%m-%d %H:%M"),
-                         "category": "Test category - salad",
-                         "comment": "Test comment - for Friday's dinner",
+                         "category": "Meat",
+                         "comment": "The most delicious ever!",
                          "recipe_title": "Title1",
                          "recipe_link": "Url1",
                          "ingredients": "Ingredients1, test1"},
                         {"recipe_id": 2,
                          "save_date": datetime.strftime(current_time, "%Y-%m-%d %H:%M"),
-                         "category": "Test category - snack",
-                         "comment": "Test comment - for Sunday's break.",
+                         "category": "Meat",
+                         "comment": "The most delicious ever!",
                          "recipe_title": "Title2",
                          "recipe_link": "Url2",
                          "ingredients": "Ingredients2, test2"},
@@ -200,10 +200,10 @@ class TestRecipesStats(BaseTest):
     def test_get_admin(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("User1", "Pwd1!").save_to_db()
-                UserModel("User2", "Pwd1!").save_to_db()
-                UserModel("User3", "Pwd1!").save_to_db()
-                UserModel("User4", "Pwd1!").save_to_db()
+                UserModel("TestUsername1", "Pwd1!").save_to_db()
+                UserModel("TestUsername2", "Pwd1!").save_to_db()
+                UserModel("TestUsername3", "Pwd1!").save_to_db()
+                UserModel("TestUsername4", "Pwd1!").save_to_db()
 
                 current_time = datetime.utcnow()
 
@@ -211,11 +211,11 @@ class TestRecipesStats(BaseTest):
                 recipe_id2, _ = RecipeModel("Title2", "Url2", "Ingredients2, test2").save_to_db()
                 recipe_id3, _ = RecipeModel("Title3", "Url3", "Ingredients3, test3").save_to_db()
                 FavouriteRecipesModel(2, recipe_id1, current_time,
-                                      "Test category - salad", "Test comment - for Friday's dinner").save_to_db()
+                                      "Meat", "The most delicious ever!").save_to_db()
                 FavouriteRecipesModel(2, recipe_id2, current_time,
-                                      "Test category - salad", "Test comment - for Friday's dinner").save_to_db()
+                                      "Meat", "The most delicious ever!").save_to_db()
                 FavouriteRecipesModel(2, recipe_id3, current_time,
-                                      "Test category - salad", "Test comment - for Friday's dinner").save_to_db()
+                                      "Meat", "The most delicious ever!").save_to_db()
 
                 FavouriteRecipesModel(3, recipe_id1, current_time).save_to_db()
                 FavouriteRecipesModel(3, recipe_id2, current_time).save_to_db()

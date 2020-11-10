@@ -9,8 +9,8 @@ class TestUserRegister(BaseTest):
             with self.app() as client:
                 response = client.post(f"{URL}/register",
                                        data=json.dumps({
-                                           "username": "Test username",
-                                           "password": "Test password"
+                                           "username": "TestUsername",
+                                           "password": "TestPwd1"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -29,11 +29,11 @@ class TestUserRegister(BaseTest):
     def test_post_duplicate_user(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("Test username", "Test password").save_to_db()
+                UserModel("TestUsername", "TestPwd1!").save_to_db()
                 response = client.post(f"{URL}/register",
                                        data=json.dumps({
-                                           "username": "Test username",
-                                           "password": "Test password"
+                                           "username": "TestUsername",
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -53,14 +53,14 @@ class TestUserRegister(BaseTest):
             with self.app() as client:
                 response = client.post(f"{URL}/register",
                                        data=json.dumps({
-                                           "username": "Test username",
-                                           "password": "Aa1!"
+                                           "username": "TestUsername",
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
                                        }
                                        )
-                expected = {"message": "User Test username created successfully!"}
+                expected = {"message": "User TestUsername created successfully!"}
 
                 self.assertEqual(json.loads(response.data), expected,
                                  "The message returned by the endpoint /register "

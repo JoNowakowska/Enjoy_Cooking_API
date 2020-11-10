@@ -10,11 +10,11 @@ class TestUserStats(BaseTest):
     def test_get_user_stats_not_admin(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("User1", "Pwd1!").save_to_db()
+                UserModel("TestUsername", "TestPwd1!").save_to_db()
                 response = client.post(f"{URL}/login",
                                        data=json.dumps({
-                                           "username": "User1",
-                                           "password": "Pwd1!"
+                                           "username": "TestUsername",
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -39,11 +39,11 @@ class TestUserStats(BaseTest):
     def test_get_users_stats_admin(self):
         with self.app_context():
             with self.app() as client:
-                UserModel("TestAdmin", "Pwd1!", admin=1).save_to_db()
-                UserModel("User1", "Pwd1!").save_to_db()
-                UserModel("User2", "Pwd1!").save_to_db()
-                UserModel("User3", "Pwd1!").save_to_db()
-                UserModel("User4", "Pwd1!").save_to_db()
+                UserModel("TestAdmin", "TestPwd1!", admin=1).save_to_db()
+                UserModel("TestUsername", "TestPwd1!").save_to_db()
+                UserModel("TestUsername2", "TestPwd1!").save_to_db()
+                UserModel("TestUsername3", "TestPwd1!").save_to_db()
+                UserModel("TestUsername4", "TestPwd1!").save_to_db()
 
                 current_time = datetime.utcnow()
 
@@ -51,11 +51,11 @@ class TestUserStats(BaseTest):
                 recipe_id2, _ = RecipeModel("Title2", "Url2", "Ingredients2, test2").save_to_db()
                 recipe_id3, _ = RecipeModel("Title3", "Url3", "Ingredients3, test3").save_to_db()
                 FavouriteRecipesModel(2, recipe_id1, current_time,
-                                      "Test category - salad", "Test comment - for Friday's dinner").save_to_db()
+                                      "Meat", "The most delicious ever!").save_to_db()
                 FavouriteRecipesModel(2, recipe_id2, current_time,
-                                      "Test category - salad", "Test comment - for Friday's dinner").save_to_db()
+                                      "Meat", "The most delicious ever!").save_to_db()
                 FavouriteRecipesModel(2, recipe_id3, current_time,
-                                      "Test category - salad", "Test comment - for Friday's dinner").save_to_db()
+                                      "Meat", "The most delicious ever!").save_to_db()
 
                 FavouriteRecipesModel(3, recipe_id1, current_time).save_to_db()
                 FavouriteRecipesModel(3, recipe_id2, current_time).save_to_db()
@@ -66,7 +66,7 @@ class TestUserStats(BaseTest):
                 response = client.post(f"{URL}/login",
                                        data=json.dumps({
                                            "username": "TestAdmin",
-                                           "password": "Pwd1!"
+                                           "password": "TestPwd1!"
                                        }),
                                        headers={
                                            "Content-Type": "application/json"
@@ -94,28 +94,28 @@ class TestUserStats(BaseTest):
                         {
                             "admin": 0,
                             "user_id": 2,
-                            "username": "User1",
+                            "username": "TestUsername",
                             "number_of_favourite_recipes_saved": 3,
                             "ids_of_favourite_recipes": [1, 2, 3]
                         },
                         {
                             "admin": 0,
                             "user_id": 3,
-                            "username": "User2",
+                            "username": "TestUsername2",
                             "number_of_favourite_recipes_saved": 3,
                             "ids_of_favourite_recipes": [1, 2, 3]
                         },
                         {
                             "admin": 0,
                             "user_id": 4,
-                            "username": "User3",
+                            "username": "TestUsername3",
                             "number_of_favourite_recipes_saved": 2,
                             "ids_of_favourite_recipes": [1, 2]
                         },
                         {
                             "admin": 0,
                             "user_id": 5,
-                            "username": "User4",
+                            "username": "TestUsername4",
                             "number_of_favourite_recipes_saved": 0,
                             "ids_of_favourite_recipes": []
                         }
