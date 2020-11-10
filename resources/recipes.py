@@ -32,22 +32,25 @@ class NewRecipes(Resource):
 
         ingredients = '&i=' + users_data['ingredients'].replace(", ", '%2C')
 
-        page_no = '?p=1'
-
         url = "https://recipe-puppy.p.rapidapi.com/"
-
-        final_endpoint = url + page_no + ingredients + dish
 
         headers = {
             'x-rapidapi-host': "recipe-puppy.p.rapidapi.com",
             'x-rapidapi-key': EXTERNAL_API_KEY
         }
 
-        response = requests.get(final_endpoint, headers=headers)
+        list_of_results = []
 
-        res = response.json()
-
-        list_of_results = res['results']
+        for x in range(10):
+            page_no = 1
+            final_endpoint = f"{url}?p={page_no}{ingredients}{dish}"
+            response = requests.get(final_endpoint, headers=headers)
+            res = response.json()['results']
+            if len(res) > 0:
+                list_of_results.append(res)
+                page_no += 1
+            else:
+                break
 
         return {f'''Recipes with the ingredients of your choice ({users_data['ingredients']})''': list_of_results}, 200
 
