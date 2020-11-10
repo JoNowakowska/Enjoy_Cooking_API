@@ -13,8 +13,8 @@ class TestUsersFavouriteRecipes(BaseTest):
             self.user.save_to_db()
             recipe = RecipeModel("Title1", "Url1", "Ingredients1, test1")
             recipe.save_to_db()
-            self.time_now = datetime.utcnow()
-            self.f_recipe = FavouriteRecipesModel(self.user.user_id, recipe.recipe_id, self.time_now,
+            self.current_time = datetime.utcnow()
+            self.f_recipe = FavouriteRecipesModel(self.user.user_id, recipe.recipe_id, self.current_time,
                                                   "Meat", "The most delicious ever!")
 
     def test_crud(self):
@@ -26,7 +26,7 @@ class TestUsersFavouriteRecipes(BaseTest):
 
             self.assertEqual(len(FavouriteRecipesModel.find_by_recipe_id(1)), 1,
                              "The favourite recipe wasn't found in db (by id = 1) while it should be found.")
-            self.assertEqual(FavouriteRecipesModel.find_by_recipe_id(1)[0].save_date, self.time_now,
+            self.assertEqual(FavouriteRecipesModel.find_by_recipe_id(1)[0].save_date, self.current_time,
                              "The favourite recipe's save_date is not correct.")
             self.assertEqual(FavouriteRecipesModel.find_by_recipe_id(1)[0].category, "Meat",
                              "The favourite recipe's category is not correct.")
@@ -46,7 +46,7 @@ class TestUsersFavouriteRecipes(BaseTest):
             favourite_recipe = FavouriteRecipesModel.find_by_recipe_id_user_id(1, 1)
 
             expected = {"recipe_id": 1,
-                        "save_date": datetime.strftime(self.time_now, "%Y-%m-%d %H:%M"),
+                        "save_date": datetime.strftime(self.current_time, "%Y-%m-%d %H:%M"),
                         "category": "Meat",
                         "comment": "The most delicious ever!",
                         "recipe_title": "Title1",
@@ -72,14 +72,14 @@ class TestUsersFavouriteRecipes(BaseTest):
             self.f_recipe.save_to_db()
             recipe2 = RecipeModel("Title2", "Url2", "Ingredients2, test2")
             recipe2.save_to_db()
-            f_recipe2 = FavouriteRecipesModel(self.user.user_id, recipe2.recipe_id, self.time_now)
+            f_recipe2 = FavouriteRecipesModel(self.user.user_id, recipe2.recipe_id, self.current_time)
             f_recipe2.save_to_db()
             my_recipes = [x.json() for x in FavouriteRecipesModel.show_mine(self.user.user_id)]
 
             expected = [
                 {
                     "recipe_id": 1,
-                    "save_date": datetime.strftime(self.time_now, "%Y-%m-%d %H:%M"),
+                    "save_date": datetime.strftime(self.current_time, "%Y-%m-%d %H:%M"),
                     "category": "Meat",
                     "comment": "The most delicious ever!",
                     "recipe_title": "Title1",
@@ -87,7 +87,7 @@ class TestUsersFavouriteRecipes(BaseTest):
                     "ingredients":  "Ingredients1, test1"},
                 {
                     "recipe_id": 2,
-                    "save_date": datetime.strftime(self.time_now, "%Y-%m-%d %H:%M"),
+                    "save_date": datetime.strftime(self.current_time, "%Y-%m-%d %H:%M"),
                     "category": None,
                     "comment": None,
                     "recipe_title": "Title2",
@@ -103,7 +103,7 @@ class TestUsersFavouriteRecipes(BaseTest):
             self.f_recipe.save_to_db()
             recipe2 = RecipeModel("Title2", "Url2", "Ingredients2, test2")
             recipe2.save_to_db()
-            f_recipe2 = FavouriteRecipesModel(self.user.user_id, recipe2.recipe_id, self.time_now)
+            f_recipe2 = FavouriteRecipesModel(self.user.user_id, recipe2.recipe_id, self.current_time)
             f_recipe2.save_to_db()
             my_recipes_ids = FavouriteRecipesModel.show_my_recipe_ids(self.user.user_id)
             self.assertListEqual(my_recipes_ids, [(1,), (2,)],
@@ -114,7 +114,7 @@ class TestUsersFavouriteRecipes(BaseTest):
             self.f_recipe.save_to_db()
             recipe2 = RecipeModel("Title2", "Url2", "Ingredients2, test2")
             recipe2.save_to_db()
-            f_recipe2 = FavouriteRecipesModel(self.user.user_id, recipe2.recipe_id, self.time_now)
+            f_recipe2 = FavouriteRecipesModel(self.user.user_id, recipe2.recipe_id, self.current_time)
             f_recipe2.save_to_db()
             all_recipes = FavouriteRecipesModel.show_all()
             self.assertEqual(len(all_recipes), 2,
@@ -125,11 +125,11 @@ class TestUsersFavouriteRecipes(BaseTest):
             self.f_recipe.save_to_db()
             recipe2 = RecipeModel("Title2", "Url2", "Ingredients2, test2")
             recipe2.save_to_db()
-            f_recipe2 = FavouriteRecipesModel(self.user.user_id, recipe2.recipe_id, self.time_now)
+            f_recipe2 = FavouriteRecipesModel(self.user.user_id, recipe2.recipe_id, self.current_time)
             f_recipe2.save_to_db()
             user2 = UserModel("TestUsername2", "TestPwd1!")
             user2.save_to_db()
-            f_rec_user2 = FavouriteRecipesModel(user2.user_id, recipe2.recipe_id, self.time_now)
+            f_rec_user2 = FavouriteRecipesModel(user2.user_id, recipe2.recipe_id, self.current_time)
             f_rec_user2.save_to_db()
             stats = [(rm.recipe_id, stat) for (rm, stat) in FavouriteRecipesModel.show_stats()]
             expected = [(1, 1), (2, 2)]
