@@ -23,32 +23,32 @@ request_parser.add_argument('dish',
 class NewRecipes(Resource):
     @jwt_required
     def post(self):
-        users_data = request_parser.parse_args()
-
-        if users_data['dish']:
-            dish = f"&q={users_data['dish']}"
-        else:
-            dish = ''
-
-        ingredients = '&i=' + users_data['ingredients'].replace(", ", '%2C')
-
         url = "https://recipe-puppy.p.rapidapi.com/"
-
         headers = {
             'x-rapidapi-host': "recipe-puppy.p.rapidapi.com",
             'x-rapidapi-key': EXTERNAL_API_KEY
         }
 
+        users_data = request_parser.parse_args()
+        ingredients = users_data['ingredients'].replace(", ", '%2C')
+        if users_data['dish']:
+            payload = {
+                "q": users_data['dish'],
+                "i": ingredients
+            }
+        else:
+            payload = {"i": ingredients}
+        page_no = 1
         list_of_results = []
 
         for x in range(10):
-            page_no = 1
-            final_endpoint = f"{url}?p={page_no}{ingredients}{dish}"
-            response = requests.get(final_endpoint, headers=headers)
+            payload.update({"p": page_no})
+            response = requests.get(url, params=payload, headers=headers)
+            print(response.url)
             res = response.json()['results']
             if len(res) > 0:
                 list_of_results.append(res)
-                page_no += 1
+                page_no = page_no + 1
             else:
                 break
 
