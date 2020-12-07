@@ -66,6 +66,9 @@ Finally, run the app by double-clicking app.py.
   
 You can use Postman to check all the endpoints. I've included my Postman collection in the postman_collection folder.
 
+## Unit tests
+The app uses unittest library to perform unit, integration and system tests.
+
 ## Info about the source of data used in the API
 The Enjoy Cooking API connects to another API to get the data it needs. 
 
